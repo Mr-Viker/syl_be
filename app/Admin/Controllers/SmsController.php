@@ -72,6 +72,7 @@ class SmsController extends Controller
     protected function grid()
     {
         return Admin::grid(Sms::class, function (Grid $grid) {
+            $grid->model()->orderBy('created_at', 'desc');
             $grid->disableCreateButton();
             $grid->disableRowSelector();
             $grid->disableActions();
@@ -87,8 +88,8 @@ class SmsController extends Controller
             $grid->phone('手机号')->sortable();
             $grid->code('验证码');
             $grid->type('类型')->display(function($v) {
-                $types = ['register' => '注册', 'change_password' => '修改密码'];
-                return "<span class='label label-success'>{$types[$v]}</span>";
+                $types = ['register' => '注册', 'forgetPassword' => '修改密码'];
+                return "<span class='label label-success'>" . $types[$v] . "</span>";
             })->sortable();
             $grid->result('返回结果')->display(function($v) {
                 return "<span style='word-break: break-all; display:inline-block; max-width:300px;'>{$v}</span>";

@@ -5,6 +5,7 @@
 namespace App\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UploadService {
 
@@ -37,6 +38,23 @@ class UploadService {
     return $allRight 
             ? ['code' => '00', 'data' => $urls, 'msg' => '上传成功'] 
             : ['code' => '500', 'data' => $urls, 'msg' => '上传失败'];
+  }
+
+
+  // 上传文件
+  public function uploadFile($file) {
+    if(is_object($file) && get_class($file) == 'Illuminate\Http\UploadedFile'){
+      $ext = $file->getClientOriginalExtension(); //文件拓展名
+      $fileName = date('YmdHis') . md5(uniqid()) . ".{$ext}"; //新文件名
+      $realPath = $file->getRealPath(); //临时文件的绝对路径
+
+      $bool = Storage::disk('admin')->put($fileName, file_get_contents($realPath));
+      if($bool){
+        // return url('uploads'). '/' . $fileName;
+        return $fileName;
+      }
+      return '';
+    }
   }
 
 }

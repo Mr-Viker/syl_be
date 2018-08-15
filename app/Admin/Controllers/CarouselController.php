@@ -72,10 +72,11 @@ class CarouselController extends Controller
     protected function grid()
     {
         return Admin::grid(Carousel::class, function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
 
             $grid->id('ID')->sortable();
             $grid->title('标题');
-            $grid->img('轮播图')->image();
+            $grid->img('轮播图')->image('', 400, 200);
             $grid->link('链接')->display(function($v) {
                 return "<a href='{$v}'>{$v}</a>";
             });
@@ -102,7 +103,7 @@ class CarouselController extends Controller
 
             $form->display('id', 'ID');
             $form->text('title', '标题');
-            $form->image('img', '轮播图');
+            $form->image('img', '轮播图')->uniqueName()->removable()->rules('required');
             $form->text('link', '链接');
             // $form->text('status');
             $form->radio('status', '状态')->options(['0' => '显示', '1' => '不显示'])->default('0');

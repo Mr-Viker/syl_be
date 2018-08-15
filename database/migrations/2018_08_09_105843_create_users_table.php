@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('avatar')->nullable();
             $table->float('balance')->default('0.00')->nullable();
+            $table->tinyInteger('autoplay')->default(0)->nullable();
             $table->tinyInteger('status')->default(0)->nullable()->comment('状态：0正常 1冻结');
             $table->timestamps();
         });

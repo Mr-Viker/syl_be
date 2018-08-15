@@ -1,13 +1,13 @@
 <?php
 /**
- * 登录验证中间件
+ * 解析token中间件
  */
 namespace App\Http\Middleware;
 
 use Closure;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class LAuth
+class ParseToken
 {
     /**
      * Handle an incoming request.
@@ -18,8 +18,12 @@ class LAuth
      */
     public function handle($request, Closure $next)
     {
-        if (empty($request->userInfo)) {
-            return response()->json(['code' => '500', 'msg' => '用户未登录']);
+        if (!empty($request->header('token'))) {
+          try {
+              $request->userInfo = \JWTAuth::parseToken("bearer", "token")->authenticate();
+          } catch (JWTException $e) {
+              return response()->json(['code' => '500', 'msg' => $e->getMessage()]);
+          }
         }
 
         return $next($request);

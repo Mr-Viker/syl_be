@@ -109,4 +109,18 @@ return [
         'filter_clear'       => '显示全部',
         'filter_placeholder' => '过滤',
     ],
+
+    // order
+    'order_wait_pay'    => '有一笔待支付订单啦~',
+    'order_wait_send'  => '有一笔待发货订单啦~',
+    'order_success'     => '有一笔订单交易成功啦~',
+    'order_cancel'  => '有一笔订单取消交易啦~',
+
+
+
+
+
+
+
+
 ];

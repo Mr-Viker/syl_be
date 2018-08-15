@@ -75,11 +75,16 @@ class ConfigController extends Controller
     public function store(Request $req)
     {
         $data = $req->all();
+        // dd(is_object($data['qrcode']), is_file($data['qrcode']), get_class($data['qrcode']));
         // dd($data);
         foreach ($data as $key => $value) {
             // 如果是laravel内置数据则不保存至数据库
             if ($key == '_token' || $key == '_previous_') {
                 continue;
+            }
+            // 如果是图片 则需要保存
+            if(is_object($value) && get_class($value) == 'Illuminate\Http\UploadedFile'){
+                $value = app('Upload')->uploadFile($value);
             }
             // 如果是数组则序列化保存
             $value = is_array($value) ? serialize($value) : $value;
@@ -145,6 +150,8 @@ class ConfigController extends Controller
 
             $form->tab('全局设置', function($form) {
                 $form->text('system_name', '系统名称')->default(lsConfig('system_name'));
+                $form->text('tel', '客服电话')->default(lsConfig('tel'));
+                $form->image('qrcode', '客服二维码')->uniqueName()->removable()->value(lsConfig('qrcode'));
             })
             ->tab('短信设置', function($form) {
                 $form->text('sms_key', '阿里云应用Key')->default(lsConfig('sms_key'));

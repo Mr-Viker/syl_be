@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Order;
+use App\Models\Pay;
+
 /**
  * Laravel-admin - admin builder based on Laravel.
  * @author z-song <https://github.com/z-song>
@@ -18,4 +21,78 @@
  *
  */
 
-Encore\Admin\Form::forget(['map', 'editor']);
+// Encore\Admin\Form::forget(['map', 'editor']);
+
+
+Encore\Admin\Grid\Column::extend('orderStatus', function ($value) {
+  $status = Order::getAllStatus();
+  switch ($value) {
+    // 橙
+    case 0:
+        return "<span class='label label-warning'>{$status[$value]}</span>";
+        break;
+    // 红
+    case 1:
+        return "<span class='label label-danger'>{$status[$value]}</span>";
+        break;
+    // 蓝
+    case 2:
+        return "<span class='label label-info'>{$status[$value]}</span>";
+        break;
+    // 绿
+    case 3:
+        return "<span class='label label-success'>{$status[$value]}</span>";
+        break;
+    // 灰
+    default:
+        return "<span class='label label-default'>{$status[$value]}</span>";
+        break;
+  }
+});
+
+Encore\Admin\Grid\Column::extend('payStatus', function ($value) {
+  $status = Pay::getAllStatus();
+  switch ($value) {
+    // 待支付
+    case 0:
+        return "<span class='label label-warning'>{$status[$value]}</span>";
+        break;
+    // 失败
+    case 1:
+        return "<span class='label label-success'>{$status[$value]}</span>";
+        break;
+    // 成功
+    case 2:
+        return "<span class='label label-danger'>{$status[$value]}</span>";
+        break;
+    // 默认
+    default:
+        return "<span class='label label-warning'>{$status[$value]}</span>";
+        break;
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

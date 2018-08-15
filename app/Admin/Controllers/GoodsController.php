@@ -72,15 +72,20 @@ class GoodsController extends Controller
     protected function grid()
     {
         return Admin::grid(Goods::class, function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
 
             $grid->id('ID')->sortable();
-            $grid->cate('分类')->name()->sortable();
-            $grid->title('名称')->sortable();
-            $grid->subtitle('描述');
-            $grid->thumb('缩略图')->image();
+            $grid->cate()->name('分类')->sortable();
+            $grid->title('名称')->sortable()->display(function($v) {
+                return "<div style='width:200px; overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>{$v}</div>";
+            });
+            $grid->desc('介绍')->display(function($v) {
+                return "<div style='max-width:200px; height:auto; max-height:100px; overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>{$v}</div>";
+            });
             $grid->price('价格')->sortable();
             $grid->amount('库存')->sortable();
             $grid->sold('已售')->sortable();
+            $grid->thumb('缩略图')->image('', 100, 100);
             $grid->status('状态')->display(function($v) {
                 if ($v == 0) {
                     return "<span class='label label-success'>正常</span>";
@@ -111,12 +116,14 @@ class GoodsController extends Controller
             $form->display('id', 'ID');
             $form->select('cate_id', '分类')->options($cates)->rules('required');
             $form->text('title', '名称')->rules('required');
-            $form->text('subtitle', '描述');
             $form->image('thumb', '缩略图')->uniqueName()->removable();
             $form->number('price', '价格')->rules('required');
+            $form->number('freight', '运费')->default(0.00);
             $form->number('amount', '库存')->rules('required');
             $form->number('sold', '已售')->default(0)->rules('required');
             $form->radio('status', '状态')->options(['0' => '正常', '1' => '下架']);
+            $form->multipleImage('imgs', '详情轮播图')->uniqueName()->removable();
+            $form->editor('desc', '商品介绍');
             // $form->display('created_at', 'Created At');
             // $form->display('updated_at', 'Updated At');
         });

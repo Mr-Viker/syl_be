@@ -18,5 +18,7 @@ Route::group([
     $router->resource('big_pic', BigPicController::class);
     $router->resource('goods', GoodsController::class);
     $router->resource('cate', CateController::class);
+    $router->resource('order', OrderController::class);
+    $router->resource('pay', PayController::class);
 
 });
