@@ -2,9 +2,11 @@
 /**
  * 订单控制器
  */
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Events\OrderUpdate;
+use App\Http\Controllers\Controller;
+use App\Jobs\Order as OrderJob;
 use App\Models\Address;
 use App\Models\Goods;
 use App\Models\Order;
@@ -29,7 +31,7 @@ class OrderController extends Controller
         // 某状态订单
         $query = $user->orders()->where('status', $data['type']);
       }
-      $res = $query->with('goods')->paginate($data['prePage'], ['*'], '', $data['page'])->toArray();
+      $res = $query->orderBy('id', 'desc')->with('goods')->paginate($data['prePage'], ['*'], '', $data['page'])->toArray();
     } catch (\Exception $e) {
       return ['code' => '00', 'msg' => $e->getMessage()];
     }
@@ -77,6 +79,9 @@ class OrderController extends Controller
       \DB::commit();
       // // 发出下单成功事件
       // \Event::fire(new OrderUpdate($order));
+      // 生成一个检测订单队列，如果三十分钟还未支付成功，则取消订单
+      OrderJob::dispatch($order)->delay(now()->addMinutes(1));
+
     } catch(\Exception $e) {
       \DB::rollBack();
       return ['code' => '500', 'msg' => $e->getMessage()];
@@ -102,10 +107,10 @@ class OrderController extends Controller
       \DB::beginTransaction();
       $res = $order->cancel();
       // 更新商品信息
-      $goods = $order->goods;
-      $goods->amount = $goods->amount + $order->num;
-      $goods->sold = $goods->sold - $order->num;
-      $goods->update();
+      // $goods = $order->goods;
+      // $goods->amount = $goods->amount + $order->num;
+      // $goods->sold = $goods->sold - $order->num;
+      // $goods->update();
       \DB::commit();
       if (!$res) {
         \DB::rollBack();
@@ -118,7 +123,7 @@ class OrderController extends Controller
   }
 
 
-  // 检测订单
+  // 检测订单 前端支付结果页轮询
   public function check(Request $req) {
     $data = $req->only(['id']);
     // 验证

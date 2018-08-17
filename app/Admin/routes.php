@@ -9,6 +9,7 @@ Route::group([
     'namespace'     => config('admin.route.namespace'),
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
+    $router->any('order/checkNewOrder', 'OrderController@checkNewOrder');
 
     $router->get('/', 'HomeController@index');
     $router->resource('user', UserController::class);
@@ -20,5 +21,7 @@ Route::group([
     $router->resource('cate', CateController::class);
     $router->resource('order', OrderController::class);
     $router->resource('pay', PayController::class);
+
+    
 
 });

@@ -2,11 +2,15 @@
 /**
  * 用户控制器
  */
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\InvoicePaid;
 use App\Validators\UserValidator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Notification;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
@@ -90,6 +94,9 @@ class UserController extends Controller
     } catch (JWTException $e) {
       return ['code' => '500', 'msg' => $e->getMessage()];
     }
+
+    // Notification::send($user, new InvoicePaid($user));
+    // Cache::store('file')->put('user', $user);
 
     $user->token = $token;
     $userInfo = $user->toArray();

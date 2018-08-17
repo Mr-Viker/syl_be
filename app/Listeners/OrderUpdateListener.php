@@ -4,14 +4,22 @@
  */
 namespace App\Listeners;
 
+use App\Admin\Controllers\OrderController;
 use App\Events\OrderUpdate;
 use App\Models\Order;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class OrderUpdateListener
+class OrderUpdateListener implements ShouldQueue
 {
     private $order;
+
+    /**
+     * 任务可以尝试的最大次数。
+     *
+     * @var int
+     */
+    public $tries = 3;
 
     /**
      * Create the event listener.
@@ -33,11 +41,10 @@ class OrderUpdateListener
     {
         $this->order = $event->order;
         // 如果订单状态更新 则通知后台管理人员
-        \Log::info("[================ 新订单通知: 有一笔待支付订单啦 ====================]\n
-            [订单ID: {$this->order->id}]\n
-            [=============================================================]
-        ");
-
+        \Log::info("[================ 订单通知: 有一笔待发货订单啦 ====================]");
+        \Log::info("[订单ID: {$this->order->id}]");
+        \Log::info("[=============================================================]");
+        return OrderController::showToast();
 
         // dd(Order::ORDER_WATI_PAY);
         // switch ($this->order->status) {

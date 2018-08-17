@@ -24,6 +24,10 @@ use App\Models\Pay;
 // Encore\Admin\Form::forget(['map', 'editor']);
 
 
+Admin::js('/static/admin/js/admin.js');
+
+
+
 Encore\Admin\Grid\Column::extend('orderStatus', function ($value) {
   $status = Order::getAllStatus();
   switch ($value) {

@@ -2,8 +2,9 @@
 /**
  * 地址控制器
  */
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\User;
 use App\Validators\AddressValidator;

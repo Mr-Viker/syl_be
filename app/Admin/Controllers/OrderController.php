@@ -28,6 +28,7 @@ class OrderController extends Controller
             $content->description('列表');
 
             $content->body($this->grid());
+            // self::showToast();
         });
     }
 
@@ -78,7 +79,7 @@ class OrderController extends Controller
 
             $grid->id('ID')->sortable();
             $grid->user('用户')->display(function($user) {
-                return "<a href='" . url('admin/user?id='.$user['id']) . "' style='display: block; text-align:center;' title='点击查看'><img src='" . url('uploads') . '/' . $user['avatar'] . "' alt='' style='display:inline-block;width:60px;height:60px;border-radius:50%;'><span style='display: block; text-align: center;'>" . $user['username'] . "</span></a>";
+                return "<a href='" . url('admin/user?id='.$user['id']) . "' style='display: block; text-align:left;' title='点击查看'><img src='" . url('uploads') . '/' . $user['avatar'] . "' alt='' style='display:inline-block;width:60px;height:60px;border-radius:50%;'><span style='display: block; text-align: center;'>" . $user['username'] . "</span></a>";
             });
             $grid->goods('商品')->display(function($goods) {
                 return "<a href='". url('admin/goods?id='.$goods['id']) ."' title='点击查看' style='display:inline-block;max-width: 200px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;'><img src='". url('upload') . '/' . $goods['thumb'] ."' alt='' style='display:inline-block;max-width: 200px;max-height: 80px;height: auto;'>" . $goods['title']. "</a>";
@@ -129,6 +130,16 @@ class OrderController extends Controller
             $form->display('created_at', 'Created At');
             $form->display('updated_at', 'Updated At');
         });
+    }
+
+
+    // 有待发货订单时显示通知
+    public function checkNewOrder() {
+        $orders = Order::where([['status', '=', Order::ORDER_WAIT_SEND], ['updated_at', '>', now()->subMinutes(10)]])->get();
+        if (!$orders) {
+            return ['code' => '01', 'msg' => '没有待发货订单'];
+        }
+        return ['code' => '00', 'data' => $orders, 'msg' => '获取成功'];
     }
 
 }

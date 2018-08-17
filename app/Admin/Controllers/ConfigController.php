@@ -150,7 +150,8 @@ class ConfigController extends Controller
 
             $form->tab('全局设置', function($form) {
                 $form->text('system_name', '系统名称')->default(lsConfig('system_name'));
-                $form->text('tel', '客服电话')->default(lsConfig('tel'));
+                $form->email('system_email', '管理员邮箱')->default(lsConfig('system_email'));
+                $form->mobile('tel', '客服电话')->default(lsConfig('tel'));
                 $form->image('qrcode', '客服二维码')->uniqueName()->removable()->value(lsConfig('qrcode'));
             })
             ->tab('短信设置', function($form) {

@@ -46,7 +46,7 @@
 /**
  * API
  */
-Route::group(['prefix' => 'api'], function() {
+Route::group(['prefix' => 'api', 'namespace' => 'API'], function() {
   Route::any('sms', 'SmsController@send');
   Route::any('upload', 'UploadController@upload');
   Route::any('config', 'ConfigController@list');
@@ -60,7 +60,8 @@ Route::group(['prefix' => 'api'], function() {
   Route::any('cate/list', 'GoodsController@cate');
   Route::any('goods/list', 'GoodsController@list');
   Route::any('goods/detail', 'GoodsController@detail');
-
+  // mail
+  Route::get('mail/send','MailController@send');
 
 
 

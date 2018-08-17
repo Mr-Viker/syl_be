@@ -79,7 +79,7 @@ class PayController extends Controller
             $grid->order_id('订单ID')->sortable();
             $grid->user('用户')->display(function($user) {
                 // dd($this->user);
-                return "<a href='" . url('admin/user?id='.$user['id']) . "' style='display: block; text-align:center;' title='点击查看'><img src='" . url('uploads') . '/' . $user['avatar'] . "' alt='' style='display:inline-block;width:60px;height:60px;border-radius:50%;'><span style='display: block; text-align: center;'>" . $user['username'] . "</span></a>";
+                return "<a href='" . url('admin/user?id='.$user['id']) . "' style='display: block; text-align:left;' title='点击查看'><img src='" . url('uploads') . '/' . $user['avatar'] . "' alt='' style='display:inline-block;width:60px;height:60px;border-radius:50%;'><span style='display: block;'>" . $user['username'] . "</span></a>";
             })->sortable();
             $grid->type('支付类型')->sortable();
             $grid->status('状态')->payStatus()->sortable();

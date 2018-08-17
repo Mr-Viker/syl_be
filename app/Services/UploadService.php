@@ -41,7 +41,7 @@ class UploadService {
   }
 
 
-  // 上传文件
+  // 保存文件
   public function uploadFile($file) {
     if(is_object($file) && get_class($file) == 'Illuminate\Http\UploadedFile'){
       $ext = $file->getClientOriginalExtension(); //文件拓展名

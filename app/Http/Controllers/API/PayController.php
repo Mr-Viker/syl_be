@@ -2,8 +2,10 @@
 /**
  * 支付处理
  */
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\Pay;
 use App\Validators\PayValidator;
 use Illuminate\Http\Request;
@@ -17,6 +19,11 @@ class PayController extends Controller
     $valid = PayValidator::handle($data, 'pay');
     if ($valid !== true) {
       return ['code' => '01', 'msg' => $valid->first()];
+    }
+    // 检测订单状态
+    $canPay = Order::find($data['orderId'])->canPay();
+    if ($canPay !== true) {
+      return ['code' => '01', 'msg' => $canPay];
     }
     // 检测是否有该支付记录了 防止重复提交
     $pay = Pay::where('order_id', $data['orderId'])->first();
