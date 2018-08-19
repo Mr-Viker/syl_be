@@ -111,7 +111,8 @@ class UserController extends Controller
         return Admin::grid(User::class, function (Grid $grid) {
             // $grid->disableRowSelector(); //checkbox
             // $grid->disableExport(); //导出
-
+            $grid->model()->orderBy('id', 'desc');
+            
             $grid->id('ID')->sortable();
             $grid->avatar('头像')->image('', 50, 50);
             $grid->username('用户名');
@@ -145,8 +146,7 @@ class UserController extends Controller
             $form->display('id', 'ID');
             $form->text('username', '用户名')->rules('required');
             $form->text('phone', '手机号')->rules('required|regex:/^\d+$/');
-            $form->password('password', '密码')->default('*************************')
-                ->help('密码不能修改，新增用户默认密码123456')->attribute('readonly', true);
+            $form->display('password', '密码')->help('密码不能修改，新增用户默认密码123456');
             $form->image('avatar', '头像')->uniqueName()->removable();
             $form->number('balance', '账户余额')->default(0.00);
             $form->radio('status', '状态')->options(['0' => '正常', '1'=> '冻结'])->default('0');

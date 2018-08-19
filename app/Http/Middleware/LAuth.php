@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * 登录验证中间件
+ */
 namespace App\Http\Middleware;
 
 use Closure;
@@ -16,16 +18,8 @@ class LAuth
      */
     public function handle($request, Closure $next)
     {
-        if (empty($request->header('token'))) {
+        if (empty($request->userInfo)) {
             return response()->json(['code' => '500', 'msg' => '用户未登录']);
-        }
-        try {
-            $request->userInfo = \JWTAuth::parseToken("bearer", "token")->authenticate();
-            if (!$request->userInfo) {
-                return response()->json(['code' => '500', 'msg' => '用户未登录']);
-            }
-        } catch (JWTException $e) {
-            return response()->json(['code' => '500', 'msg' => $e->getMessage()]);
         }
 
         return $next($request);

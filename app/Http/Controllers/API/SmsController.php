@@ -2,8 +2,9 @@
 /**
  * 短信控制器
  */
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Validators\UserValidator;
 use Illuminate\Http\Request;
@@ -18,12 +19,14 @@ class SmsController extends Controller {
     if (true !== $valid) {
       return ['code' => '01', 'msg' => $valid->first()];
     }
+    $user = new User();
+    $isExists = $user->isExists($data['phone']);
     // 如果是注册 则需要查看该手机号是否已注册
-    if ($data['type'] == 'register') {
-      $user = new User();
-      if ($user->isExists($data['phone'])) {
-        return ['code' => '01', 'msg' => '手机号已注册'];
-      }
+    if ($data['type'] == 'register' && $isExists) {
+      return ['code' => '01', 'msg' => '手机号已注册'];
+    }
+    if ($data['type'] == 'forgetPassword' && !($isExists)) {
+      return ['code' => '01', 'msg' => '手机号未注册'];
     }
     // send
     try {

@@ -72,7 +72,7 @@ class BigPicController extends Controller
     protected function grid()
     {
         return Admin::grid(BigPic::class, function (Grid $grid) {
-
+            $grid->model()->orderBy('id', 'desc');
             $grid->id('ID')->sortable();
             $grid->title('标题');
             $grid->img('图片')->image();

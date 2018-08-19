@@ -2,11 +2,15 @@
 /**
  * 用户控制器
  */
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\InvoicePaid;
 use App\Validators\UserValidator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Notification;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
@@ -39,11 +43,19 @@ class UserController extends Controller
     empty($data['avatar']) ?: $user->avatar = $data['avatar'];
     try {
       $res = $user->save();
-      // dd($user);
-      return ['code' => '00', 'data' => $user->id, 'msg' => '注册成功'];
+      // 验证用户(User表) 如果成功返回一个token
+      if (!$token = \JWTAuth::fromUser($user)) {
+        return ['code' => '01', 'msg' => '生成token失败'];
+      }
     } catch(\Exception $e) {
       return ['code' => '500', 'msg' => $e->getMessage()];
     }
+
+    $user->token = $token;
+    $userInfo = $user->toArray();
+    $userInfo['status'] = $user->getAttribute('status');
+    // 保存成功则生成一个token并将token和用户信息返回给前端
+    return ['code' => '00', 'data' => $userInfo, 'msg' => '注册成功'];
   }
 
 
@@ -80,8 +92,11 @@ class UserController extends Controller
         return ['code' => '01', 'msg' => '手机号或密码错误'];
       }
     } catch (JWTException $e) {
-      return ['code' => '500', 'msg' => '用户不存在'];
+      return ['code' => '500', 'msg' => $e->getMessage()];
     }
+
+    // Notification::send($user, new InvoicePaid($user));
+    // Cache::store('file')->put('user', $user);
 
     $user->token = $token;
     $userInfo = $user->toArray();
@@ -96,15 +111,20 @@ class UserController extends Controller
   public function info(Request $req) {
     // $user = \Session::get('user');
 
-    $id = $req->userInfo->id;
-    $user = User::find($id);
-    $userInfo = $user->toArray();
-    $userInfo['status'] = $user->getOriginal('status');
-    if ($user) {
-      return ['code' => '00', 'data' => $userInfo, 'msg' => '获取成功'];
-    } else {
-      return ['code' => '01', 'msg' => '获取失败'];
+    try {
+      $id = $req->userInfo->id;
+      $user = User::find($id);
+      // 获取用户每种状态的订单数
+      $user->waitPay = $user->orders()->where('status', 0)->count();
+      $user->waitSend = $user->orders()->where('status', 1)->count();
+      $user->waitConfirm = $user->orders()->where('status', 2)->count();
+
+      $userInfo = $user->toArray();
+      $userInfo['status'] = $user->getOriginal('status');
+    } catch(\Exception $e) {
+      return ['code' => '500', 'msg' => $e->getMessage()];
     }
+    return ['code' => '00', 'data' => $userInfo, 'msg' => '获取成功'];
   }
 
 
@@ -149,6 +169,7 @@ class UserController extends Controller
         }
         $user->username = $data['username'];
         break;
+
       // 修改密码
       case 'password':
         $valid = UserValidator::handle($data, 'changePassword', $req);
@@ -157,19 +178,51 @@ class UserController extends Controller
         }
         $user->password = \Hash::make($data['password']);
         break;
+
+      // 修改自动播放设置
+      case 'autoplay':
+        if (!isset($data['autoplay'])) {
+          return ['code' => '01', 'msg' => '参数不能为空'];
+        }
+        $user->autoplay = $data['autoplay'];
+        break;
     }
     // 入库
     try {
       $res = $user->update();
-      return ['code' => '00', 'msg' => '更新成功'];
     } catch(\Exception $e) {
       return ['code' => '500', 'msg' => $e->getMessage()];
     }
-
+    return ['code' => '00', 'msg' => '更新成功'];
   }
 
 
-
+  // 忘记密码
+  public function forgetPassword(Request $req) {
+    $data = $req->only(['phone', 'smsCode', 'password', 'confirmPassword']);
+    // 验证
+    $valid = UserValidator::handle($data, 'forgetPassword');
+    if ($valid !== true) {
+      return ['code' => '01', 'msg' => $valid->first()];
+    }
+    // 检测手机号是否已注册
+    $user = User::where('phone', $data['phone'])->first();
+    if (!$user) {
+      return ['code' => '01', '手机号未注册'];
+    }
+    // 检测短信验证码
+    if (!(app('Sms')::check($data['phone'], $data['smsCode'], 'forgetPassword'))) {
+      return ['code' => '01', 'msg' => '验证码错误'];
+    }
+    // 更新
+    try {
+      $user->password = \Hash::make($data['password']);
+      $user->update();
+    } catch(\Exception $e) {
+      return ['code' => '500', 'msg' => $e->getMessage()];
+    }
+    return ['code' => '00', 'msg' => '更新成功'];
+  }
 
 
 

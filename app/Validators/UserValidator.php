@@ -28,6 +28,7 @@ class UserValidator extends BaseValidator {
     'register' => ['username', 'phone', 'password', 'smsCode'],
     'login' => ['phone', 'password'],
     'changePassword' => ['oldPassword', 'password', 'confirmPassword'],
+    'forgetPassword' => ['phone', 'smsCode', 'password', 'confirmPassword'],
   ];
 
 }

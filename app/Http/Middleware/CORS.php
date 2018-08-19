@@ -19,7 +19,7 @@ class CORS {
 
     // 防止走了两次控制器方法
     if ($req->isMethod('OPTIONS')) {
-      return Response::make(['code' => '200', 'msg' => 'OK']);
+      return response(['code' => '200', 'msg' => 'OK']);
     }
 
     return $next($req);
