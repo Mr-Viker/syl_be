@@ -44,7 +44,7 @@ class OrderUpdateListener implements ShouldQueue
         \Log::info("[================ 订单通知: 有一笔待发货订单啦 ====================]");
         \Log::info("[订单ID: {$this->order->id}]");
         \Log::info("[=============================================================]");
-        return OrderController::showToast();
+        // return OrderController::showToast();
 
         // dd(Order::ORDER_WATI_PAY);
         // switch ($this->order->status) {

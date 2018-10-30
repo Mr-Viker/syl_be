@@ -46,14 +46,14 @@
 /**
  * API
  */
-Route::group(['prefix' => 'api', 'namespace' => 'API'], function() {
+Route::group(['prefix' => 'api', 'namespace' => 'API', 'middleware' => ['cors', 'parsetoken']], function() {
   Route::any('sms', 'SmsController@send');
   Route::any('upload', 'UploadController@upload');
   Route::any('config', 'ConfigController@list');
   // user
   Route::any('user/register', 'UserController@register');
   Route::any('user/login', 'UserController@login');
-  Route::any('user/forgetPassword', 'UserController@forgetPassword');
+  Route::any('user/forgetPassword', 'UserController@forgetPassword'); 
   // goods
   Route::any('index/banner', 'IndexController@banner');
   Route::any('index/bigPic', 'IndexController@bigPic');
@@ -63,6 +63,9 @@ Route::group(['prefix' => 'api', 'namespace' => 'API'], function() {
   // mail
   Route::get('mail/send','MailController@send');
 
+  /**
+   * 防止token过期无法注册登录等情况
+   */
 
 
   /**

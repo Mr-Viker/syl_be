@@ -16,7 +16,7 @@ class Goods extends Model
     return $this->belongsTo(Cate::class, 'cate_id');
   }
 
-  // 收藏
+  // 收藏 
   public function collects() {
     return $this->belongsToMany(User::class, 'collects', 'goods_id', 'user_id');
   }

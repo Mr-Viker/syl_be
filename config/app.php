@@ -161,9 +161,9 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         App\Providers\SmsServiceProvider::class, // sms
-        App\Providers\UploadServiceProvider::class, // sms
+        App\Providers\UploadServiceProvider::class, // upload
         Mews\Captcha\CaptchaServiceProvider::class, // captcha
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class, // jwt
     ],
 
     /*

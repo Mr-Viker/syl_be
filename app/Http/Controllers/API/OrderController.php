@@ -71,10 +71,14 @@ class OrderController extends Controller
       $order->price = $data['price'];
       $order->num = $data['num'];
       $order->total = $data['total'];
-      $res = $order->save();
+      $order->save();
       // 更新商品信息
       $goods->amount = $goods->amount - $data['num'];
       $goods->sold = $goods->sold + $data['num'];
+      // 防止并发
+      if ($goods->amount < 0) {
+        throw new \Exception('库存不足，购买失败');
+      }
       $goods->update();
       \DB::commit();
       // // 发出下单成功事件
