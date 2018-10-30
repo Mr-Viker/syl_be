@@ -15,4 +15,5 @@ yarn-error.log
 /public/uploads
 /public/vendor
 /composer.lock
+.DS_Store
 /bootstrap/cache

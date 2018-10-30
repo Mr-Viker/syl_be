@@ -48,7 +48,7 @@ class Order extends Model
   public function updatePaySuccessStatus() {
     $res = $this->updateOrderStatus(self::ORDER_WAIT_SEND);
     // 发出订单更新事件
-    \Event::fire(new OrderUpdate($this));
+    // \Event::fire(new OrderUpdate($this));
     return $res;
   }
 

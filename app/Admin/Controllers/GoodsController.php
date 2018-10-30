@@ -90,7 +90,7 @@ class GoodsController extends Controller
                 if ($v == 0) {
                     return "<span class='label label-success'>正常</span>";
                 } else {
-                    return "<span class='label label-error'>下架</span>";
+                    return "<span class='label label-danger'>下架</span>";
                 }
             })->sortable();
             $grid->created_at('创建时间');

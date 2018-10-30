@@ -20,9 +20,9 @@ class ParseToken
     {
         if (!empty($request->header('token'))) {
           try {
-              $request->userInfo = \JWTAuth::parseToken("bearer", "token")->authenticate();
+            $request->userInfo = \JWTAuth::parseToken("bearer", "token")->authenticate();
           } catch (JWTException $e) {
-              return response()->json(['code' => '500', 'msg' => $e->getMessage()]);
+            return response()->json(['code' => '500', 'msg' => $e->getMessage()]);
           }
         }
 
