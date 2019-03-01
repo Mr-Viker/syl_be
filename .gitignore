@@ -13,7 +13,6 @@ yarn-error.log
 .env
 
 /public/uploads
-/public/vendor
 /composer.lock
 .DS_Store
 /bootstrap/cache
